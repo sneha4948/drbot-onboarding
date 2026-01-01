@@ -4,18 +4,20 @@ LANGUAGE_CHOICES = [
     ('English', 'English'),
     ('Hindi', 'Hindi'),
     ('Kannada', 'Kannada'),
+    ('Tamil', 'Tamil'),
+    ('Telugu', 'Telugu'),
 ]
 
 DOCTOR_CHOICES = [
     ('Choose doctor', 'Choose doctor'),
-    ('Dr Shirley', 'Dr Shirley'),
-    ('Dr Salma', 'Dr Salma'),
-    ('Dr Umesh', 'Dr Umesh'),
+    ('Dr. Payal Shah', 'Dr. Payal Shah'),
+    ('Dr. Test', 'Dr. Test'),
 ]
 
 STAFF_CHOICES = [
     ('Choose staff', 'Choose staff'),
-    ('Dr Shubha Nayak', 'Dr Shubha Nayak'),
+    ('Staff Member', 'Staff Member'),
+    ('Staff Test', 'Staff Test'),
 ]
 
 CONSENT_CHOICES = [

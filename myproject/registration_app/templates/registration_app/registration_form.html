@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Oncobot User Registration</title>
+    <title>DR Bot Patient Registration</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -20,6 +20,7 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color: #1e40af;
         }
         .error {
             color: red;
@@ -54,7 +55,8 @@
 <body>
 <div class="container">
     <div class="form-container">
-        <h1>Oncobot User Registration</h1>
+        <h1>DR Bot Patient Registration</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Sankara Eye Hospital - Diabetic Retinopathy Screening</p>
         <form method="post" novalidate>
             {% csrf_token %}
             {% for field in form %}

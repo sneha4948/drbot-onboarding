@@ -35,7 +35,7 @@ SECRET_KEY = "django-insecure-94+6orem9k^x4@6gc8+!ukyxsx-7)uh&uf!z8d2@o2e07k^%d#
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'oncobot-onboarding.azurewebsites.net',  # Your Azure Web App domain
+    'drbot-onboarding.azurewebsites.net',  # DR Bot Azure Web App domain
     '169.254.129.2',  # Azure internal services
     'localhost',  # For local development
     '127.0.0.1',  # For local development
@@ -43,7 +43,7 @@ ALLOWED_HOSTS = [
 
 # CSRF settings for Azure deployment
 CSRF_TRUSTED_ORIGINS = [
-    'https://oncobot-onboarding.azurewebsites.net',
+    'https://drbot-onboarding.azurewebsites.net',
     'https://*.azurewebsites.net',  # Covers any Azure subdomain variations
 ]
 

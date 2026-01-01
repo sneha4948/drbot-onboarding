@@ -7,6 +7,8 @@ LANGUAGE_CODES = {
     "English": "en",
     "Hindi": "hi",
     "Kannada": "kn",
+    "Tamil": "ta",
+    "Telugu": "te",
 }
 
 def register_user(request):
@@ -24,23 +26,19 @@ def register_user(request):
             staff_name = form.cleaned_data["staff_name"]
             
             # Map doctor names to phone numbers
-            if doctor_name == "Dr Shirley":
-                doctor_number = "919969557231"
-            elif doctor_name == "Dr Salma":
-                doctor_number = "917034432034"
-            elif doctor_name == "Dr Umesh":
-                doctor_number = "918700105161"
+            if doctor_name == "Dr. Payal Shah":
+                doctor_number = "918088506150"
+            elif doctor_name == "Dr. Test":
+                doctor_number = "919587743875"
             else:
-                doctor_number = "919739811075"  # Default
+                doctor_number = "918088506150"  # Default to Dr. Payal Shah
 
-            if staff_name == "Dr Shubha Nayak":
-                staff_number = "917022488975"
-            # elif staff_name == "Dr Salma":
-            #     staff_number = "917034432034"
-            # elif staff_name == "Dr Umesh":
-            #     staff_number = "918700105161"
+            if staff_name == "Staff Member":
+                staff_number = "918667406490"
+            elif staff_name == "Staff Test":
+                staff_number = "919353935536"
             else:
-                staff_number = "919739811075"  # Default
+                staff_number = "918667406490"  # Default to Staff Member
 
             # Map language to code
             language_code = LANGUAGE_CODES.get(language, "en")
@@ -67,8 +65,12 @@ def register_user(request):
                     "age": age,
                 },
                 "experts": {
-                    "byoebexpert": [doctor_number], 
-                    "byoebexpert2": [staff_number]
+                    "medical": [doctor_number], 
+                    "logistical": [staff_number]
+                },
+                "user_location": {
+                    "is_onboarded": False,
+                    "registered_from_webapp": True
                 }
             }])
 
@@ -77,8 +79,8 @@ def register_user(request):
 
             try:
                 response = requests.post(
-                    "https://oncobot-h7fme6hue9f7buds.canadacentral-01.azurewebsites.net/register_users",
-                    # "http://localhost:5000/register_users",
+                    "http://localhost:5000/register_users",
+                    # Change this to your DR Bot backend URL when deploying
                     headers={"Content-Type": "application/json"},
                     data=api_body
                 )
