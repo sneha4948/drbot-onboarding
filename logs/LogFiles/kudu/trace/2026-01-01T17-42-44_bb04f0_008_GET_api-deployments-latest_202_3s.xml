@@ -1,0 +1,9 @@
+<step title="Incoming Request" date="2026-01-01T17:42:44.283" instance="bb04f0" url="/api/deployments/latest?deployer=OneDeploy&amp;time=2026-01-01_17-42-26Z" method="GET" type="request" pid="769,1,7" Host="drbot-onboarding-ftdtgvhpfmebdycm.scm.canadacentral-01.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_f7f17b5e208ad162aa550aa730d3f3168a1cbba7c33a441d4236bd010cffd124" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Cookie="ARRAffinity=bb04f0757b9535fa4a28c7c87d6f7e119a08f7738c31ca16cb77511c35c0f9c4;Path=/;HttpOnly;Secure;Domain=drbot-onboarding-ftdtgvhpfmebdycm.scm.canadacentral-01.azurewebsites.net; ARRAffinitySameSite=bb04f0757b9535fa4a28c7c87d6f7e119a08f7738c31ca16cb77511c35c0f9c4;Path=/;HttpOnly;SameSite=None;Secure;Domain=drbot-onboarding-ftdtgvhpfmebdycm.scm.canadacentral-01.azurewebsites.net" Content-Length="0" X-ARR-LOG-ID="ccf894b2-9b1b-4d2e-8b20-35bb984e91b2" CLIENT-IP="64.236.161.41:23552" X-SITE-DEPLOYMENT-ID="drbot-onboarding" WAS-DEFAULT-HOSTNAME="drbot-onboarding-ftdtgvhpfmebdycm.scm.canadacentral-01.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest?deployer=OneDeploy&amp;time=2026-01-01_17-42-26Z" X-Client-IP="64.236.161.41" X-Client-Port="23552" >
+  <step title="Cleanup Xml Logs" date="2026-01-01T17:42:44.323" /><!-- duration: 47ms -->
+  <step title="DeploymentService.GetResult" date="2026-01-01T17:42:44.893" >
+    <step title="DeploymentService.GetLatestDeployment" date="2026-01-01T17:42:45.092" >
+      <step title="DeploymentManager.GetResults" date="2026-01-01T17:42:45.123" /><!-- duration: 1715ms -->
+    </step><!-- duration: 1866ms -->
+  </step><!-- duration: 2074ms -->
+  <step title="Outgoing response" date="2026-01-01T17:42:47.373" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 3ms -->
+</step><!-- duration: 3255ms -->
