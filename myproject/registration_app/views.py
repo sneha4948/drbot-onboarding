@@ -29,14 +29,14 @@ def register_user(request):
             if doctor_name == "Dr. Payal Shah":
                 doctor_number = "918088506150"
             elif doctor_name == "Dr. Test":
-                doctor_number = "919587743875"
+                doctor_number = "918667406490"  # Use staff member's number to avoid conflict
             else:
                 doctor_number = "918088506150"  # Default to Dr. Payal Shah
 
             if staff_name == "Staff Member":
                 staff_number = "918667406490"
             elif staff_name == "Staff Test":
-                staff_number = "919353935536"
+                staff_number = "919999999999"  # Unique test number to avoid conflicts
             else:
                 staff_number = "918667406490"  # Default to Staff Member
 
@@ -58,7 +58,7 @@ def register_user(request):
                 "user_id": patient_id,
                 "user_name": full_name,
                 "user_language": language_code,
-                "user_type": "byoebuser",
+                "user_type": "drbot_user",
                 "patient_details": {
                     "date_of_birth": dob_str,
                     "gender": gender,
