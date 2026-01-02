@@ -79,8 +79,7 @@ def register_user(request):
 
             try:
                 response = requests.post(
-                    "http://localhost:5000/register_users",
-                    # Change this to your DR Bot backend URL when deploying
+                    "https://drbot-app-dbgeh8gzbtdtbyb0.canadacentral-01.azurewebsites.net/register_users",
                     headers={"Content-Type": "application/json"},
                     data=api_body
                 )
