@@ -32,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENVIRONMENT = 'production'
 SECRET_KEY = "django-insecure-94+6orem9k^x4@6gc8+!ukyxsx-7)uh&uf!z8d2@o2e07k^%d#"
-DEBUG = False
+DEBUG = False  # Production mode
 
 ALLOWED_HOSTS = [
     'drbot-onboarding-ftdtgvhpfmebdycm.canadacentral-01.azurewebsites.net',  # Actual Azure URL
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add for static files serving
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -138,6 +139,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Additional locations of static files
+STATICFILES_DIRS = []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

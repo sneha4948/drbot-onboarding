@@ -84,7 +84,14 @@ def register_user(request):
                     data=api_body
                 )
                 if response.status_code == 200:
-                    return render(request, "registration_app/registration_success.html")
+                    # Check if user was already registered
+                    response_data = response.json()
+                    is_already_registered = any("Already registered" in msg.get("message", "") 
+                                                for msg in response_data.get("message", []))
+                    
+                    return render(request, "registration_app/registration_success.html", {
+                        "is_already_registered": is_already_registered
+                    })
                 else:
                     return render(request, "registration_app/registration_form.html", {"form": form, "error": f"API Error: {response.status_code}"})
             except Exception as e:

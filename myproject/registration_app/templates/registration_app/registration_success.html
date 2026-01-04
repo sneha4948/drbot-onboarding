@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Registration Successful - DR Bot</title>
+    <title>{% if is_already_registered %}Already Registered{% else %}Registration Successful{% endif %} - DR Bot</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,8 +14,14 @@
     </style>
 </head>
 <body>
-    <h1>✅ Registration Successful!</h1>
-    <p>The patient has been registered successfully for DR Bot.</p>
-    <p>They will receive a WhatsApp message shortly to start their screening journey.</p>
+    {% if is_already_registered %}
+        <h1>ℹ️ Patient Already Registered</h1>
+        <p>This patient is already registered with DR Bot and has lifetime access.</p>
+        <p>They can simply send <strong>"Hi"</strong> to the bot number to continue their screening journey.</p>
+    {% else %}
+        <h1>✅ Registration Successful!</h1>
+        <p>The patient has been registered successfully for DR Bot.</p>
+        <p>They will receive a WhatsApp message shortly to start their screening journey.</p>
+    {% endif %}
 </body>
 </html>
