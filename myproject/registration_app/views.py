@@ -86,8 +86,17 @@ def register_user(request):
                 if response.status_code == 200:
                     # Check if user was already registered
                     response_data = response.json()
-                    is_already_registered = any("Already registered" in msg.get("message", "") 
-                                                for msg in response_data.get("message", []))
+                    
+                    # Handle both response formats (dict or list)
+                    is_already_registered = False
+                    if isinstance(response_data, dict):
+                        messages = response_data.get("message", [])
+                        if isinstance(messages, list):
+                            is_already_registered = any("Already registered" in msg.get("message", "") 
+                                                        for msg in messages if isinstance(msg, dict))
+                    elif isinstance(response_data, list):
+                        is_already_registered = any("Already registered" in item.get("message", "") 
+                                                    for item in response_data if isinstance(item, dict))
                     
                     return render(request, "registration_app/registration_success.html", {
                         "is_already_registered": is_already_registered
