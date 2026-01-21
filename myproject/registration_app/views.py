@@ -29,7 +29,7 @@ def register_user(request):
             if doctor_name == "Dr. Payal Shah":
                 doctor_number = "918088506150"
             elif doctor_name == "Dr. Test":
-                doctor_number = "918667406490"  # Use staff member's number to avoid conflict
+                doctor_number = "919353935536"  # Test Doctor (your number)
             else:
                 doctor_number = "918088506150"  # Default to Dr. Payal Shah
 
