@@ -31,6 +31,24 @@ GENDER_CHOICES = [
     ('Female', 'Female'),
 ]
 
+LOCATION_CHOICES = [
+    ('Select', 'Select Location'),
+    ('Bangalore', 'Bangalore'),
+    ('Coimbatore Sathy Road', 'Coimbatore Sathy Road'),
+    ('RS Puram', 'RS Puram'),
+    ('Guntur', 'Guntur'),
+    ('Shimoga', 'Shimoga'),
+    ('Jaipur', 'Jaipur'),
+    ('Indore', 'Indore'),
+    ('Panvel', 'Panvel'),
+    ('Krishnankoil', 'Krishnankoil'),
+    ('Anand', 'Anand'),
+    ('Ludhiana', 'Ludhiana'),
+    ('Kanpur', 'Kanpur'),
+    ('Hyderabad', 'Hyderabad'),
+    ('Varanasi', 'Varanasi'),
+]
+
 class UserRegistrationForm(forms.Form):
     full_name = forms.CharField(label="Full Name", max_length=100, required=True)
     patient_id = forms.CharField(label="Patient ID", max_length=100, required=True)
@@ -54,6 +72,17 @@ class UserRegistrationForm(forms.Form):
     language = forms.ChoiceField(label="Preferred Language", choices=LANGUAGE_CHOICES, required=True)
     doctor_name = forms.ChoiceField(label="Doctor Assigned", choices=DOCTOR_CHOICES, required=True)
     staff_name = forms.ChoiceField(label="Staff Assigned", choices=STAFF_CHOICES, required=True)
+    location = forms.ChoiceField(label="Location", choices=LOCATION_CHOICES, required=True)
+    aadhar_number = forms.CharField(
+        label="Aadhar Number (Optional)",
+        max_length=14,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'XXXX-XXXX-XXXX',
+            'maxlength': '14',
+            'class': 'form-control aadhar-input',
+        })
+    )
     # consent = forms.ChoiceField(label="Consents?", choices=CONSENT_CHOICES, widget=forms.RadioSelect, required=True)
     
     def __init__(self, *args, **kwargs):
@@ -61,6 +90,21 @@ class UserRegistrationForm(forms.Form):
         # Add CSS classes for styling
         self.fields['phone_number'].widget.attrs['class'] = 'form-control phone-input'
         self.fields['date_of_birth'].widget.attrs['class'] = 'form-control'
+    
+    def clean_aadhar_number(self):
+        aadhar = self.cleaned_data.get('aadhar_number', '')
+        if not aadhar:
+            return ''
+        digits = ''.join(filter(str.isdigit, aadhar))
+        if len(digits) != 12:
+            raise forms.ValidationError("Aadhar number must be 12 digits")
+        return f"{digits[:4]}-{digits[4:8]}-{digits[8:12]}"
+    
+    def clean_location(self):
+        location = self.cleaned_data.get('location')
+        if location == 'Select':
+            raise forms.ValidationError("Please select a location")
+        return location
     
     def clean_phone_number(self):
         phone_number = self.cleaned_data['phone_number']

@@ -405,6 +405,24 @@
                         <div class="error">{{ form.staff_name.errors|striptags }}</div>
                     {% endif %}
                 </div>
+                
+                <!-- Location -->
+                <div class="form-group">
+                    {{ form.location.label_tag }}<br>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                        <div class="error">{{ form.location.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Aadhar Number (Optional) -->
+                <div class="form-group">
+                    {{ form.aadhar_number.label_tag }}<br>
+                    {{ form.aadhar_number }}
+                    {% if form.aadhar_number.errors %}
+                        <div class="error">{{ form.aadhar_number.errors|striptags }}</div>
+                    {% endif %}
+                </div>
             </div>
             
             <button type="submit" class="btn btn-primary btn-block">Register</button>
@@ -414,13 +432,6 @@
             <p class="error mt-3">{{ error }}</p>
         {% endif %}
         
-        <!-- Partnership Footer -->
-        <div class="partnership-footer">
-            <div class="msr-container">
-                <span class="built-by-text">Built by</span>
-                <img src="{% static 'registration_app/images/msr_logo.png' %}" alt="Microsoft Research" class="msr-logo-img" onerror="this.style.display='none'">
-            </div>
-        </div>
     </div>
 </div>
 
@@ -575,6 +586,21 @@
             closeAllPickers();
         }
     });
+    
+    // Aadhar auto-formatting (XXXX-XXXX-XXXX)
+    const aadharInput = document.querySelector('.aadhar-input');
+    if (aadharInput) {
+        aadharInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 12) value = value.substring(0, 12);
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i === 4 || i === 8) formatted += '-';
+                formatted += value[i];
+            }
+            e.target.value = formatted;
+        });
+    }
 </script>
 </body>
 </html>
