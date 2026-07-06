@@ -1,5 +1,10 @@
 from django import forms
 
+COUNTRY_CODE_CHOICES = [
+    ('91', 'India (+91)'),
+    ('1', 'US (+1)'),
+]
+
 LANGUAGE_CHOICES = [
     ('English', 'English'),
     ('Hindi', 'Hindi'),
@@ -17,7 +22,7 @@ DOCTOR_CHOICES = [
 STAFF_CHOICES = [
     ('Choose staff', 'Choose staff'),
     ('Staff Member', 'Staff Member'),
-    ('Staff Test', 'Staff Test'),
+    ('Staff Test', 'Staff Test'),  # maps to 917980601033
 ]
 
 CONSENT_CHOICES = [
@@ -29,6 +34,25 @@ GENDER_CHOICES = [
     ('Select', 'Select'),
     ('Male', 'Male'),
     ('Female', 'Female'),
+]
+
+DR_GRADE_CHOICES = [
+    ('Not assessed', 'Not assessed'),
+    ('No DR', 'No DR'),
+    ('Mild NPDR', 'Mild NPDR'),
+    ('Moderate NPDR', 'Moderate NPDR'),
+    ('Severe NPDR', 'Severe NPDR'),
+    ('PDR', 'PDR (Proliferative)'),
+]
+
+DIABETES_DURATION_CHOICES = [
+    ('Unknown', 'Unknown'),
+    ('Not diabetic', 'Not diabetic'),
+    ('<2 years', '<2 years'),
+    ('2-5 years', '2-5 years'),
+    ('6-10 years', '6-10 years'),
+    ('10-20 years', '10-20 years'),
+    ('>20 years', '>20 years'),
 ]
 
 LOCATION_CHOICES = [
@@ -50,22 +74,39 @@ LOCATION_CHOICES = [
 ]
 
 class UserRegistrationForm(forms.Form):
-    full_name = forms.CharField(label="Full Name", max_length=100, required=True)
-    patient_id = forms.CharField(label="Patient ID", max_length=100, required=True)
+    full_name = forms.CharField(label="Full Name", max_length=100, required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'}))
+    mr_no = forms.CharField(
+        label="MR No.",
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'e.g. SEHPAT-123456-26', 'class': 'form-control'})
+    )
+    patient_id = forms.CharField(
+        label="Patient ID",
+        max_length=10,
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'e.g. 12345', 'class': 'form-control'})
+    )
+    country_code = forms.ChoiceField(
+        label="Country Code",
+        choices=COUNTRY_CODE_CHOICES,
+        initial='91',
+        widget=forms.Select(attrs={'class': 'form-control', 'style': 'width: 140px; display: inline-block;'})
+    )
     phone_number = forms.CharField(
         label="Phone Number (Whatsapp)", 
         max_length=20, 
         required=True,
         widget=forms.TextInput(attrs={
             'placeholder': 'XXXXXXXXXX',
-            'maxlength': '10',
+            'maxlength': '15',
         })
     )
-    # email = forms.EmailField(label="Email Address", required=False)
     date_of_birth = forms.DateField(
-        label="Date of Birth (mm/dd/yyyy)", 
-        widget=forms.DateInput(attrs={'type': 'date'}), 
-        required=False
+        label="Date of Birth",
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
     # age = forms.IntegerField(label="Age", required=False)
     gender = forms.ChoiceField(label="Gender", choices=GENDER_CHOICES, required=True)
@@ -83,13 +124,58 @@ class UserRegistrationForm(forms.Form):
             'class': 'form-control aadhar-input',
         })
     )
+    follow_up_date = forms.DateField(
+        label="Follow-up Date",
+        required=True,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    surgery_date = forms.DateField(
+        label="Surgery Date (Optional)",
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    dr_grade = forms.ChoiceField(
+        label="DR Grade (Optional)",
+        choices=DR_GRADE_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    diabetes_duration = forms.ChoiceField(
+        label="Diabetes Duration (Optional)",
+        choices=DIABETES_DURATION_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     # consent = forms.ChoiceField(label="Consents?", choices=CONSENT_CHOICES, widget=forms.RadioSelect, required=True)
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Add CSS classes for styling
         self.fields['phone_number'].widget.attrs['class'] = 'form-control phone-input'
-        self.fields['date_of_birth'].widget.attrs['class'] = 'form-control'
+
+    def _clean_date_field(self, field_name):
+        """Parse dd/mm/yyyy string to date object"""
+        val = self.cleaned_data.get(field_name, '').strip()
+        if not val:
+            return None
+        import re
+        from datetime import date
+        m = re.match(r'^(\d{1,2})/(\d{1,2})/(\d{4})$', val)
+        if not m:
+            raise forms.ValidationError("Date must be in dd/mm/yyyy format")
+        day, month, year = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        try:
+            return date(year, month, day)
+        except ValueError:
+            raise forms.ValidationError("Invalid date")
+
+    def clean_date_of_birth(self):
+        return self.cleaned_data.get('date_of_birth')  # already a date from DateField
+
+    def clean_follow_up_date(self):
+        return self.cleaned_data.get('follow_up_date')  # already a date from DateField
+
+    def clean_surgery_date(self):
+        return self.cleaned_data.get('surgery_date')  # already a date from DateField
     
     def clean_aadhar_number(self):
         aadhar = self.cleaned_data.get('aadhar_number', '')
@@ -108,15 +194,41 @@ class UserRegistrationForm(forms.Form):
     
     def clean_phone_number(self):
         phone_number = self.cleaned_data['phone_number']
+        country_code = self.cleaned_data.get('country_code', '91')
         # Remove any spaces, dashes, or parentheses
         phone_number = ''.join(filter(str.isdigit, phone_number))
         
-        # If user entered number without country code, assume it's Indian
-        if len(phone_number) == 10:
-            phone_number = '91' + phone_number
-        elif len(phone_number) == 12 and phone_number.startswith('91'):
-            pass  # Already has country code
+        # Add country code if not already present
+        if country_code == '91':
+            if len(phone_number) == 10:
+                phone_number = '91' + phone_number
+            elif len(phone_number) == 12 and phone_number.startswith('91'):
+                pass
+            else:
+                raise forms.ValidationError("Please enter a valid 10-digit Indian phone number")
+        elif country_code == '1':
+            if len(phone_number) == 10:
+                phone_number = '1' + phone_number
+            elif len(phone_number) == 11 and phone_number.startswith('1'):
+                pass
+            else:
+                raise forms.ValidationError("Please enter a valid 10-digit US phone number")
         else:
-            raise forms.ValidationError("Please enter a valid Indian phone number")
+            phone_number = country_code + phone_number
         
         return phone_number
+
+    def clean_patient_id(self):
+        pid = self.cleaned_data.get('patient_id', '').strip()
+        if not pid.isdigit() or len(pid) > 5:
+            raise forms.ValidationError("Patient ID must be up to 5 digits (e.g. 12345)")
+        return pid
+
+    def clean_mr_no(self):
+        mid = self.cleaned_data.get('mr_no', '').strip()
+        if not mid:
+            return ''
+        import re
+        if not re.match(r'^[A-Za-z]{3,6}-[0-9]{4,6}-[0-9]{2}$', mid):
+            raise forms.ValidationError("MR No. format: SEHPAT-123456-26 (letters-digits-digits)")
+        return mid.upper()

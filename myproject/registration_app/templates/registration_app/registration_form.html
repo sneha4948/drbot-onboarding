@@ -44,13 +44,10 @@
         .phone-input {
             padding-left: 50px !important;
         }
-        /* Make DOB, phone number, full name, and patient ID fields shorter */
-        #id_date_of_birth,
-        #id_phone_number,
-        #id_full_name,
-        #id_patient_id {
-            max-width: 250px !important;
-            width: 250px !important;
+        /* Full name spans full width */
+        #id_full_name {
+            width: 100% !important;
+            max-width: 100% !important;
         }
         
         /* Custom Date Picker Styles */
@@ -293,7 +290,7 @@
         <form method="post" novalidate id="registrationForm">
             {% csrf_token %}
             
-            <!-- Full Name -->
+            <!-- Full Name (full width) -->
             <div class="form-group">
                 {{ form.full_name.label_tag }}<br>
                 {{ form.full_name }}
@@ -302,70 +299,46 @@
                 {% endif %}
             </div>
             
-            <!-- Patient ID -->
-            <div class="form-group">
-                {{ form.patient_id.label_tag }}<br>
-                {{ form.patient_id }}
-                {% if form.patient_id.errors %}
-                    <div class="error">{{ form.patient_id.errors|striptags }}</div>
-                {% endif %}
+            <!-- MR No. + Patient ID side by side -->
+            <div class="grid-2x2">
+                <div class="form-group">
+                    {{ form.mr_no.label_tag }}<br>
+                    {{ form.mr_no }}
+                    {% if form.mr_no.errors %}
+                        <div class="error">{{ form.mr_no.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.patient_id.label_tag }}<br>
+                    {{ form.patient_id }}
+                    {% if form.patient_id.errors %}
+                        <div class="error">{{ form.patient_id.errors|striptags }}</div>
+                    {% endif %}
+                </div>
             </div>
             
-            <!-- Phone Number -->
-            <div class="form-group">
-                {{ form.phone_number.label_tag }}<br>
-                <div class="phone-input-container">
-                    <span class="phone-prefix">+91</span>
-                    {{ form.phone_number }}
+            <!-- Phone Number + DOB side by side -->
+            <div class="grid-2x2">
+                <!-- Phone Number -->
+                <div class="form-group">
+                    {{ form.phone_number.label_tag }}<br>
+                    <div class="phone-input-container" style="display: flex; gap: 5px;">
+                        {{ form.country_code }}
+                        {{ form.phone_number }}
+                    </div>
+                    {% if form.phone_number.errors %}
+                        <div class="error">{{ form.phone_number.errors|striptags }}</div>
+                    {% endif %}
                 </div>
-                {% if form.phone_number.errors %}
-                    <div class="error">{{ form.phone_number.errors|striptags }}</div>
-                {% endif %}
-            </div>
-            
-            <!-- Date of Birth with Custom Picker -->
-            <div class="form-group">
-                <label for="date-display-day">Date of Birth (dd/mm/yyyy):</label><br>
-                <div class="custom-date-picker">
-                    <div class="date-display">
-                        <input type="text" id="date-display-day" placeholder="DD" readonly onclick="showDayPicker()" style="cursor: pointer;">
-                        <span>/</span>
-                        <input type="text" id="date-display-month" placeholder="MM" readonly onclick="showMonthPicker()" style="cursor: pointer;">
-                        <span>/</span>
-                        <input type="text" id="date-display-year" placeholder="YYYY" readonly onclick="showYearPicker()" style="cursor: pointer;">
-                    </div>
-                    
-                    <!-- Day Picker -->
-                    <div class="date-picker-dropdown" id="dayPickerDropdown" style="display: none;">
-                        <div class="date-picker-header">
-                            <span style="font-weight: 600;">Select Day</span>
-                        </div>
-                        <div class="day-grid" id="dayGrid"></div>
-                    </div>
-                    
-                    <!-- Month Picker -->
-                    <div class="date-picker-dropdown" id="monthPickerDropdown" style="display: none;">
-                        <div class="date-picker-header">
-                            <span style="font-weight: 600;">Select Month</span>
-                        </div>
-                        <div class="month-grid" id="monthGrid"></div>
-                    </div>
-                    
-                    <!-- Year Picker -->
-                    <div class="date-picker-dropdown" id="yearPickerDropdown" style="display: none;">
-                        <div class="date-picker-header">
-                            <button type="button" class="date-picker-nav" onclick="changeYearRange(-9)">◀</button>
-                            <span id="yearRangeDisplay">Select Year</span>
-                            <button type="button" class="date-picker-nav" onclick="changeYearRange(9)">▶</button>
-                        </div>
-                        <div class="year-grid" id="yearGrid"></div>
-                    </div>
+
+                <!-- Date of Birth -->
+                <div class="form-group">
+                    {{ form.date_of_birth.label_tag }}<br>
+                    {{ form.date_of_birth }}
+                    {% if form.date_of_birth.errors %}
+                        <div class="error">{{ form.date_of_birth.errors|striptags }}</div>
+                    {% endif %}
                 </div>
-                <!-- Hidden field for form submission -->
-                <input type="hidden" name="date_of_birth" id="id_date_of_birth" value="">
-                {% if form.date_of_birth.errors %}
-                    <div class="error">{{ form.date_of_birth.errors|striptags }}</div>
-                {% endif %}
             </div>
             
             <!-- 2x2 Grid for Gender, Language, Doctor, Staff -->
@@ -423,6 +396,42 @@
                         <div class="error">{{ form.aadhar_number.errors|striptags }}</div>
                     {% endif %}
                 </div>
+                
+                <!-- Follow-up Date (Mandatory) -->
+                <div class="form-group">
+                    {{ form.follow_up_date.label_tag }}<br>
+                    {{ form.follow_up_date }}
+                    {% if form.follow_up_date.errors %}
+                        <div class="error">{{ form.follow_up_date.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Surgery Date (Optional) -->
+                <div class="form-group">
+                    {{ form.surgery_date.label_tag }}<br>
+                    {{ form.surgery_date }}
+                    {% if form.surgery_date.errors %}
+                        <div class="error">{{ form.surgery_date.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- DR Grade (Optional) -->
+                <div class="form-group">
+                    {{ form.dr_grade.label_tag }}<br>
+                    {{ form.dr_grade }}
+                    {% if form.dr_grade.errors %}
+                        <div class="error">{{ form.dr_grade.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Diabetes Duration (Optional) -->
+                <div class="form-group">
+                    {{ form.diabetes_duration.label_tag }}<br>
+                    {{ form.diabetes_duration }}
+                    {% if form.diabetes_duration.errors %}
+                        <div class="error">{{ form.diabetes_duration.errors|striptags }}</div>
+                    {% endif %}
+                </div>
             </div>
             
             <button type="submit" class="btn btn-primary btn-block">Register</button>
@@ -440,153 +449,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    let selectedYear = null;
-    let selectedMonth = null;
-    let selectedDay = null;
-    let currentYearStart = new Date().getFullYear() - 50; // Start from 50 years ago
-    
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-    function closeAllPickers() {
-        document.getElementById('dayPickerDropdown').style.display = 'none';
-        document.getElementById('monthPickerDropdown').style.display = 'none';
-        document.getElementById('yearPickerDropdown').style.display = 'none';
-    }
-    
-    function showDayPicker() {
-        closeAllPickers();
-        document.getElementById('dayPickerDropdown').style.display = 'block';
-        renderDayGrid();
-    }
-    
-    function showMonthPicker() {
-        closeAllPickers();
-        document.getElementById('monthPickerDropdown').style.display = 'block';
-        renderMonthGrid();
-    }
-    
-    function showYearPicker() {
-        closeAllPickers();
-        document.getElementById('yearPickerDropdown').style.display = 'block';
-        renderYearGrid();
-    }
-    
-    function changeYearRange(offset) {
-        currentYearStart += offset;
-        renderYearGrid();
-    }
-    
-    function renderYearGrid() {
-        const yearGrid = document.getElementById('yearGrid');
-        const yearRangeDisplay = document.getElementById('yearRangeDisplay');
-        const endYear = currentYearStart + 8;
-        yearRangeDisplay.textContent = `${currentYearStart} - ${endYear}`;
-        
-        yearGrid.innerHTML = '';
-        for (let i = 0; i < 9; i++) {
-            const year = currentYearStart + i;
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'year-btn';
-            if (year === selectedYear) btn.classList.add('selected');
-            btn.textContent = year;
-            btn.onclick = () => selectYear(year);
-            yearGrid.appendChild(btn);
-        }
-    }
-    
-    function selectYear(year) {
-        selectedYear = year;
-        document.getElementById('date-display-year').value = year;
-        closeAllPickers();
-        updateHiddenField();
-    }
-    
-    function renderMonthGrid() {
-        const monthGrid = document.getElementById('monthGrid');
-        monthGrid.innerHTML = '';
-        
-        for (let i = 0; i < 12; i++) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'month-btn';
-            if (i === selectedMonth) btn.classList.add('selected');
-            btn.textContent = monthNames[i];
-            btn.onclick = () => selectMonth(i);
-            monthGrid.appendChild(btn);
-        }
-    }
-    
-    function selectMonth(month) {
-        selectedMonth = month;
-        document.getElementById('date-display-month').value = String(month + 1).padStart(2, '0');
-        closeAllPickers();
-        updateHiddenField();
-    }
-    
-    function renderDayGrid() {
-        const dayGrid = document.getElementById('dayGrid');
-        dayGrid.innerHTML = '';
-        
-        // Show all 31 days, will grey out invalid days if year/month selected
-        for (let i = 1; i <= 31; i++) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'day-btn';
-            
-            // Check if this day is valid for selected month/year
-            if (selectedYear !== null && selectedMonth !== null) {
-                const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-                if (i > daysInMonth) {
-                    btn.disabled = true;
-                }
-            }
-            
-            if (i === selectedDay) btn.classList.add('selected');
-            btn.textContent = i;
-            btn.onclick = () => selectDay(i);
-            dayGrid.appendChild(btn);
-        }
-    }
-    
-    function selectDay(day) {
-        // Validate day if year/month selected
-        if (selectedYear !== null && selectedMonth !== null) {
-            const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-            if (day > daysInMonth) {
-                alert(`Invalid day for ${monthNames[selectedMonth]} ${selectedYear}`);
-                return;
-            }
-        }
-        selectedDay = day;
-        document.getElementById('date-display-day').value = String(day).padStart(2, '0');
-        closeAllPickers();
-        updateHiddenField();
-    }
-    
-    function updateHiddenField() {
-        // Update hidden field only if all three are selected
-        if (selectedYear !== null && selectedMonth !== null && selectedDay !== null) {
-            const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-            document.getElementById('id_date_of_birth').value = formattedDate;
-        }
-    }
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        const dayDropdown = document.getElementById('dayPickerDropdown');
-        const monthDropdown = document.getElementById('monthPickerDropdown');
-        const yearDropdown = document.getElementById('yearPickerDropdown');
-        const dateDisplay = document.querySelector('.date-display');
-        
-        if (!dayDropdown.contains(event.target) && 
-            !monthDropdown.contains(event.target) && 
-            !yearDropdown.contains(event.target) && 
-            !dateDisplay.contains(event.target)) {
-            closeAllPickers();
-        }
-    });
-    
     // Aadhar auto-formatting (XXXX-XXXX-XXXX)
     const aadharInput = document.querySelector('.aadhar-input');
     if (aadharInput) {
@@ -599,6 +461,52 @@
                 formatted += value[i];
             }
             e.target.value = formatted;
+        });
+    }
+    
+    // MR No. auto-formatting (SEHPAT-123456-26)
+    const mrInput = document.getElementById('id_mr_no');
+    if (mrInput) {
+        mrInput.addEventListener('input', function(e) {
+            let raw = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+            let letters = raw.replace(/[^A-Z]/g, '').substring(0, 6);
+            let digits = raw.replace(/[^0-9]/g, '');
+            let d1 = digits.substring(0, 6);
+            let d2 = digits.substring(6, 8);
+            let result = letters;
+            if (d1) result += '-' + d1;
+            if (d2) result += '-' + d2;
+            e.target.value = result;
+        });
+    }
+
+    // Date auto-formatting dd/mm/yyyy for all date fields
+    document.querySelectorAll('.date-input').forEach(function(input) {
+        input.addEventListener('input', function(e) {
+            let val = e.target.value.replace(/[^0-9]/g, '');
+            if (val.length > 8) val = val.substring(0, 8);
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i === 2 || i === 4) formatted += '/';
+                formatted += val[i];
+            }
+            e.target.value = formatted;
+        });
+    });
+    
+    // Phone number: digits only, max 10
+    const phoneInput = document.getElementById('id_phone_number');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+        });
+    }
+    
+    // Patient ID: digits only, max 5
+    const patientIdInput = document.getElementById('id_patient_id');
+    if (patientIdInput) {
+        patientIdInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 5);
         });
     }
 </script>
