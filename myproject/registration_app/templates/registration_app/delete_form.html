@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete User</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 40px; }
+        .form-container { max-width: 520px; margin: auto; padding: 24px; background:#fff;
+            border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .nav-tabs-top { max-width: 520px; margin: 0 auto 16px; text-align: right; }
+        .nav-tabs-top a { margin-left: 10px; text-decoration:none; font-weight:600; color:#6b7280; }
+        .nav-tabs-top a.active { color:#dc2626; border-bottom:2px solid #dc2626; padding-bottom:2px; }
+        h1 { text-align:center; color:#dc2626; font-size:24px; margin-bottom:6px; }
+        p.sub { text-align:center; color:#666; margin-bottom:20px; }
+        label { font-weight:600; }
+        .error, .errorlist { color:#dc2626; font-weight:600; list-style:none; padding-left:0; }
+        .success { color:#16a34a; font-weight:600; text-align:center; }
+        .btn-delete { background:#dc2626; color:#fff; width:100%; padding:12px; font-size:17px;
+            font-weight:600; border:none; border-radius:8px; margin-top:18px; }
+    </style>
+</head>
+<body>
+    <div class="nav-tabs-top">
+        <a href="{% url 'landing' %}">Register</a>
+        <a href="{% url 'delete_user' %}" class="active">Delete</a>
+    </div>
+    <div class="form-container">
+        <h1>Delete User</h1>
+        <p class="sub">Remove a patient, caregiver, doctor, or counselor</p>
+
+        {% if success %}<p class="success">✅ User {{ success }} deleted successfully.</p>{% endif %}
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+        <form method="post" novalidate onsubmit="return confirm('Are you sure you want to delete this user? This cannot be undone.');">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-delete">Delete User</button>
+        </form>
+    </div>
+</body>
+</html>

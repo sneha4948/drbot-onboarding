@@ -13,6 +13,17 @@ LANGUAGE_CHOICES = [
     ('Telugu', 'Telugu'),
 ]
 
+CAREGIVER_RELATIONSHIP_CHOICES = [
+    ('', 'Select relationship'),
+    ('Spouse', 'Spouse'),
+    ('Son', 'Son'),
+    ('Daughter', 'Daughter'),
+    ('Parent', 'Parent'),
+    ('Sibling', 'Sibling'),
+    ('Friend', 'Friend'),
+    ('Other', 'Other'),
+]
+
 DOCTOR_CHOICES = [
     ('Choose doctor', 'Choose doctor'),
     ('Dr. Payal Shah', 'Dr. Payal Shah'),
@@ -103,27 +114,11 @@ class UserRegistrationForm(forms.Form):
             'maxlength': '15',
         })
     )
-    date_of_birth = forms.DateField(
-        label="Date of Birth",
-        required=False,
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
-    )
-    # age = forms.IntegerField(label="Age", required=False)
     gender = forms.ChoiceField(label="Gender", choices=GENDER_CHOICES, required=True)
     language = forms.ChoiceField(label="Preferred Language", choices=LANGUAGE_CHOICES, required=True)
     doctor_name = forms.ChoiceField(label="Doctor Assigned", choices=DOCTOR_CHOICES, required=True)
     staff_name = forms.ChoiceField(label="Staff Assigned", choices=STAFF_CHOICES, required=True)
     location = forms.ChoiceField(label="Location", choices=LOCATION_CHOICES, required=True)
-    aadhar_number = forms.CharField(
-        label="Aadhar Number (Optional)",
-        max_length=14,
-        required=False,
-        widget=forms.TextInput(attrs={
-            'placeholder': 'XXXX-XXXX-XXXX',
-            'maxlength': '14',
-            'class': 'form-control aadhar-input',
-        })
-    )
     follow_up_date = forms.DateField(
         label="Follow-up Date",
         required=True,
@@ -146,6 +141,13 @@ class UserRegistrationForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    # Caregiver (+1) — optional, encouraged
+    caregiver_relationship = forms.ChoiceField(label="Caregiver Relationship", choices=CAREGIVER_RELATIONSHIP_CHOICES,
+        required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    caregiver_phone = forms.CharField(label="Caregiver WhatsApp Number (Optional)", max_length=15, required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'XXXXXXXXXX', 'class': 'form-control'}))
+    caregiver_language = forms.ChoiceField(label="Caregiver Preferred Language", choices=LANGUAGE_CHOICES,
+        required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     # consent = forms.ChoiceField(label="Consents?", choices=CONSENT_CHOICES, widget=forms.RadioSelect, required=True)
     
     def __init__(self, *args, **kwargs):
@@ -168,24 +170,15 @@ class UserRegistrationForm(forms.Form):
         except ValueError:
             raise forms.ValidationError("Invalid date")
 
-    def clean_date_of_birth(self):
-        return self.cleaned_data.get('date_of_birth')  # already a date from DateField
-
     def clean_follow_up_date(self):
         return self.cleaned_data.get('follow_up_date')  # already a date from DateField
 
     def clean_surgery_date(self):
         return self.cleaned_data.get('surgery_date')  # already a date from DateField
-    
-    def clean_aadhar_number(self):
-        aadhar = self.cleaned_data.get('aadhar_number', '')
-        if not aadhar:
-            return ''
-        digits = ''.join(filter(str.isdigit, aadhar))
-        if len(digits) != 12:
-            raise forms.ValidationError("Aadhar number must be 12 digits")
-        return f"{digits[:4]}-{digits[4:8]}-{digits[8:12]}"
-    
+
+    def clean_caregiver_phone(self):
+        return normalize_indian_phone(self.cleaned_data.get('caregiver_phone'), required=False)
+
     def clean_location(self):
         location = self.cleaned_data.get('location')
         if location == 'Select':
@@ -232,3 +225,152 @@ class UserRegistrationForm(forms.Form):
         if not re.match(r'^[A-Za-z]{3,6}-[0-9]{4,6}-[0-9]{2}$', mid):
             raise forms.ValidationError("MR No. format: SEHPAT-123456-26 (letters-digits-digits)")
         return mid.upper()
+
+
+# ---------------------------------------------------------------------------
+# Study 1 (PHC / Adoption) forms
+# ---------------------------------------------------------------------------
+
+PHC_LOCATION_CHOICES = [
+    ('Select', 'Select PHC'),
+    ('Hagadur', 'Hagadur'),
+    ('Siddapur', 'Siddapur'),
+]
+
+ARM_CHOICES = [
+    ('Select', 'Select Track'),
+    ('ai', 'AI Track'),
+    ('nai', 'Non-AI Track'),
+]
+
+RELATIONSHIP_CHOICES = [
+    ('', 'Select relationship'),
+    ('Spouse', 'Spouse'),
+    ('Son', 'Son'),
+    ('Daughter', 'Daughter'),
+    ('Parent', 'Parent'),
+    ('Sibling', 'Sibling'),
+    ('Friend', 'Friend'),
+    ('Other', 'Other'),
+]
+
+STAFF_ROLE_CHOICES = [
+    ('Select', 'Select role'),
+    ('doctor', 'Doctor Test'),
+    ('counselor', 'Staff Test'),
+]
+
+
+def normalize_indian_phone(raw, required=True):
+    """Return a 91-prefixed 12-digit Indian number, or '' if blank & optional."""
+    digits = ''.join(filter(str.isdigit, raw or ''))
+    if not digits:
+        if required:
+            raise forms.ValidationError("Phone number is required")
+        return ''
+    if len(digits) == 10:
+        return '91' + digits
+    if len(digits) == 12 and digits.startswith('91'):
+        return digits
+    raise forms.ValidationError("Enter a valid 10-digit Indian phone number")
+
+
+class PHCPatientForm(forms.Form):
+    """PHC (adoption) patient + optional caregiver + study arm."""
+    # Patient
+    full_name = forms.CharField(label="Patient Name", max_length=100, required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'}))
+    age = forms.IntegerField(label="Age", required=True, min_value=1, max_value=120,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    gender = forms.ChoiceField(label="Gender", choices=GENDER_CHOICES, required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}))
+    phone_number = forms.CharField(label="Patient WhatsApp Number", max_length=15, required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'XXXXXXXXXX', 'class': 'form-control'}))
+    language = forms.ChoiceField(label="Patient Preferred Language", choices=LANGUAGE_CHOICES, required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}))
+    phc_location = forms.ChoiceField(label="PHC Location", choices=PHC_LOCATION_CHOICES, required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}))
+    arm = forms.ChoiceField(label="Study Track", choices=ARM_CHOICES, required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}))
+
+    # Caregiver (+1) — optional but encouraged
+    caregiver_relationship = forms.ChoiceField(label="Caregiver Relationship", choices=RELATIONSHIP_CHOICES,
+        required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    caregiver_phone = forms.CharField(label="Caregiver WhatsApp Number (Optional)", max_length=15, required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'XXXXXXXXXX', 'class': 'form-control'}))
+    caregiver_language = forms.ChoiceField(label="Caregiver Preferred Language", choices=LANGUAGE_CHOICES,
+        required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def clean_phc_location(self):
+        v = self.cleaned_data.get('phc_location')
+        if v == 'Select':
+            raise forms.ValidationError("Please select a PHC")
+        return v
+
+    def clean_arm(self):
+        v = self.cleaned_data.get('arm')
+        if v == 'Select':
+            raise forms.ValidationError("Please select a study track")
+        return v
+
+    def clean_gender(self):
+        v = self.cleaned_data.get('gender')
+        if v == 'Select':
+            raise forms.ValidationError("Please select gender")
+        return v
+
+    def clean_phone_number(self):
+        return normalize_indian_phone(self.cleaned_data.get('phone_number'), required=True)
+
+    def clean_caregiver_phone(self):
+        return normalize_indian_phone(self.cleaned_data.get('caregiver_phone'), required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+        cg_phone = cleaned.get('caregiver_phone')
+        if cg_phone:
+            # If a caregiver number is given, relationship is required
+            if not cleaned.get('caregiver_relationship'):
+                self.add_error('caregiver_relationship', "Select the caregiver's relationship")
+            if cg_phone == cleaned.get('phone_number'):
+                self.add_error('caregiver_phone', "Caregiver number must differ from the patient's")
+        return cleaned
+
+
+class StaffForm(forms.Form):
+    """Onboard a doctor or counselor (registered permanently)."""
+    staff_role = forms.ChoiceField(label="Staff Role", choices=STAFF_ROLE_CHOICES, required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def clean_staff_role(self):
+        v = self.cleaned_data.get('staff_role')
+        if v == 'Select':
+            raise forms.ValidationError("Please select a role")
+        return v
+
+
+DELETE_USER_TYPE_CHOICES = [
+    ('Select', 'Select user type'),
+    ('patient', 'Patient / Caregiver'),
+    ('doctor', 'Doctor'),
+    ('counselor', 'Counselor'),
+]
+
+
+class DeleteUserForm(forms.Form):
+    """Delete any user (patient/caregiver/doctor/counselor) by WhatsApp number."""
+    phone_number = forms.CharField(label="WhatsApp Number", max_length=15, required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'XXXXXXXXXX', 'class': 'form-control'}))
+    user_type = forms.ChoiceField(label="User Type", choices=DELETE_USER_TYPE_CHOICES, required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def clean_user_type(self):
+        v = self.cleaned_data.get('user_type')
+        if v == 'Select':
+            raise forms.ValidationError("Please select a user type")
+        return v
+
+    def clean_phone_number(self):
+        return normalize_indian_phone(self.cleaned_data.get('phone_number'), required=True)
+
+

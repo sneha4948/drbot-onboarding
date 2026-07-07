@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Registration</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 40px; }
+        .form-container { max-width: 520px; margin: auto; padding: 24px; background:#fff;
+            border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align:center; color:#1e40af; font-size:24px; margin-bottom:6px; }
+        p.sub { text-align:center; color:#666; margin-bottom:20px; }
+        label { font-weight:600; }
+        .error, .errorlist { color:#dc2626; font-weight:600; list-style:none; padding-left:0; }
+        .btn-submit { background:#6b7280; color:#fff; width:100%; padding:12px; font-size:17px;
+            font-weight:600; border:none; border-radius:8px; margin-top:18px; }
+        .back { display:inline-block; margin-bottom:10px; color:#6b7280; text-decoration:none; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <a class="back" href="{% url 'landing' %}">&larr; Back</a>
+        <h1>Staff Registration</h1>
+        <p class="sub">Doctor / Counselor — registered permanently</p>
+
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-submit">Register Staff</button>
+        </form>
+    </div>
+</body>
+</html>

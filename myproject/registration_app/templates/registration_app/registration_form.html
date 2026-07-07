@@ -331,14 +331,6 @@
                     {% endif %}
                 </div>
 
-                <!-- Date of Birth -->
-                <div class="form-group">
-                    {{ form.date_of_birth.label_tag }}<br>
-                    {{ form.date_of_birth }}
-                    {% if form.date_of_birth.errors %}
-                        <div class="error">{{ form.date_of_birth.errors|striptags }}</div>
-                    {% endif %}
-                </div>
             </div>
             
             <!-- 2x2 Grid for Gender, Language, Doctor, Staff -->
@@ -388,12 +380,30 @@
                     {% endif %}
                 </div>
                 
-                <!-- Aadhar Number (Optional) -->
+                <!-- Caregiver (+1) Relationship -->
                 <div class="form-group">
-                    {{ form.aadhar_number.label_tag }}<br>
-                    {{ form.aadhar_number }}
-                    {% if form.aadhar_number.errors %}
-                        <div class="error">{{ form.aadhar_number.errors|striptags }}</div>
+                    {{ form.caregiver_relationship.label_tag }}<br>
+                    {{ form.caregiver_relationship }}
+                    {% if form.caregiver_relationship.errors %}
+                        <div class="error">{{ form.caregiver_relationship.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Caregiver WhatsApp Number (Optional) -->
+                <div class="form-group">
+                    {{ form.caregiver_phone.label_tag }}<br>
+                    {{ form.caregiver_phone }}
+                    {% if form.caregiver_phone.errors %}
+                        <div class="error">{{ form.caregiver_phone.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Caregiver Preferred Language -->
+                <div class="form-group">
+                    {{ form.caregiver_language.label_tag }}<br>
+                    {{ form.caregiver_language }}
+                    {% if form.caregiver_language.errors %}
+                        <div class="error">{{ form.caregiver_language.errors|striptags }}</div>
                     {% endif %}
                 </div>
                 

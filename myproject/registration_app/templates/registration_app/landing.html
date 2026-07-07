@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DR Bot Registration</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 60px; }
+        .card-box { max-width: 640px; margin: auto; padding: 30px; background:#fff;
+            border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align:center; color:#1e40af; font-size:26px; margin-bottom:8px; }
+        p.sub { text-align:center; color:#666; margin-bottom:28px; }
+        .opt { display:block; width:100%; padding:18px; margin-bottom:16px; border-radius:8px;
+            font-size:18px; font-weight:600; text-align:center; text-decoration:none; }
+        .opt-phc { background:#1e40af; color:#fff; }
+        .opt-vc { background:#0d9488; color:#fff; }
+        .opt-staff { background:#6b7280; color:#fff; }
+        .opt:hover { opacity:.92; color:#fff; text-decoration:none; }
+        .section-label { font-weight:700; color:#333; margin:18px 0 10px; }
+        .nav-tabs-top { max-width: 640px; margin: 0 auto 16px; text-align: right; }
+        .nav-tabs-top a { margin-left: 10px; text-decoration:none; font-weight:600; color:#6b7280; }
+        .nav-tabs-top a.active { color:#1e40af; border-bottom:2px solid #1e40af; padding-bottom:2px; }
+    </style>
+</head>
+<body>
+    <div class="nav-tabs-top">
+        <a href="{% url 'landing' %}" class="active">Register</a>
+        <a href="{% url 'delete_user' %}">Delete</a>
+    </div>
+    <div class="card-box">
+        <h1>Sankara Eye Hospital — DR Bot</h1>
+        <p class="sub">Choose what you want to do</p>
+
+        <div class="section-label">Onboard a Patient</div>
+        <a class="opt opt-phc" href="{% url 'register_phc' %}">PHC Patient (Adoption)</a>
+        <a class="opt opt-vc" href="{% url 'register_vc' %}">Vision Centre Patient (Adherence)</a>
+
+        <div class="section-label">Onboard Staff</div>
+        <a class="opt opt-staff" href="{% url 'register_staff' %}">Doctor / Counselor</a>
+    </div>
+</body>
+</html>
