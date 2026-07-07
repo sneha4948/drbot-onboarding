@@ -109,6 +109,8 @@ def register_user(request):
             # Build patient (+ optional caregiver) as linked VC users (vc_ai)
             experts = {"medical": [doctor_number], "logistical": [staff_number]}
             user_location["patient_id"] = patient_id
+            if caregiver_phone:
+                user_location["caregiver_phone"] = caregiver_phone
             users = [{
                 "phone_number_id": phone_number,
                 "user_id": _md5(phone_number),
@@ -117,7 +119,7 @@ def register_user(request):
                 "user_type": "drbot_user",
                 "user_group": "vc_ai",
                 "experts": experts,
-                "audience": [caregiver_phone] if caregiver_phone else [],
+                "audience": [],
                 "user_location": user_location,
             }]
             if caregiver_phone:
@@ -130,7 +132,7 @@ def register_user(request):
                     "user_type": "drbot_user",
                     "user_group": "vc_ai",
                     "experts": experts,
-                    "audience": [phone_number],
+                    "audience": [],
                     "user_location": {
                         "is_onboarded": False,
                         "registered_from_webapp": True,
@@ -212,7 +214,7 @@ def register_phc(request):
                 "user_type": "drbot_user",
                 "user_group": user_group,
                 "experts": experts,
-                "audience": [caregiver_phone] if caregiver_phone else [],
+                "audience": [],
                 "user_location": {
                     "org_id": "drbot",
                     "location": phc,
@@ -222,6 +224,8 @@ def register_phc(request):
                     "is_onboarded": False,
                 },
             }
+            if caregiver_phone:
+                patient["user_location"]["caregiver_phone"] = caregiver_phone
             users.append(patient)
 
             if caregiver_phone:
@@ -234,7 +238,7 @@ def register_phc(request):
                     "user_type": "drbot_user",
                     "user_group": user_group,
                     "experts": experts,
-                    "audience": [patient_phone],
+                    "audience": [],
                     "user_location": {
                         "org_id": "drbot",
                         "location": phc,
